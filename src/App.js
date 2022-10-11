@@ -7,6 +7,7 @@ import { useState } from "react";
 
 function App() {
   const [numberPage, setNumberPage] = useState(0);
+  const [loading, setLoading] = useState(false);
   const baseURL =
     "https://wfs-api.mcredit.com.vn/wfsloan-service/api/v1/web-service/operation/export/user_register/vtp";
   const body = {
@@ -32,33 +33,36 @@ function App() {
     for (let index = 0; index < numberPage; index++) {
       urls.push(`${baseURL}?page=${index + 1}&size=6`);
     }
+    setLoading(true);
     Promise.all(
       urls.map(async (url) => {
         return await postData(url, body);
       })
-    ).then((arrResponse) => {
-      arrResponse.forEach((res, index) => {
-        console.log(
-          res.headers.get("content-disposition"),
-          "===response.headers==="
-        );
-        console.log(
-          res.headers["content-disposition"],
-          "===response.headers1==="
-        );
-        console.log(
-          res.headers.get["Content-Disposition"],
-          "===response.headers2==="
-        );
+    )
+      .then((arrResponse) => {
+        arrResponse.forEach((res, index) => {
+          console.log(
+            res.headers.get("content-disposition"),
+            "===response.headers==="
+          );
+          console.log(
+            res.headers["content-disposition"],
+            "===response.headers1==="
+          );
+          console.log(
+            res.headers.get["Content-Disposition"],
+            "===response.headers2==="
+          );
 
-        const blobFile = new Blob([res.data]);
-        folder.file(`${index}.xlsx`, blobFile);
-      });
-      zip
-        .generateAsync({ type: "blob" })
-        .then((blob) => saveAs(blob, "Excell"))
-        .catch((e) => console.log(e));
-    });
+          const blobFile = new Blob([res.data]);
+          folder.file(`${index}.xlsx`, blobFile);
+        });
+        zip
+          .generateAsync({ type: "blob" })
+          .then((blob) => saveAs(blob, "Excell"))
+          .catch((e) => console.log(e));
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -73,7 +77,11 @@ function App() {
           }}
           value={numberPage}
         />
-        <button onClick={fetchApi}>Download</button>
+        {loading ? (
+          <div>loading........</div>
+        ) : (
+          <button onClick={fetchApi}>Download</button>
+        )}
       </header>
     </div>
   );
