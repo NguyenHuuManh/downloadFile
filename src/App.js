@@ -6,7 +6,6 @@ import JSZip from "jszip";
 import { useState } from "react";
 
 function App() {
-  var zip = new JSZip();
   const [numberPage, setNumberPage] = useState(0);
   const baseURL =
     "https://wfs-api.mcredit.com.vn/wfsloan-service/api/v1/web-service/operation/export/user_register/vtp";
