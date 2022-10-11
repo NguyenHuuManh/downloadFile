@@ -4,9 +4,13 @@ import axios from "axios";
 import { saveAs } from "file-saver";
 import JSZip from "jszip";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 function App() {
   const [numberPage, setNumberPage] = useState(0);
+  const [numberSize, setNumberSize] = useState(0);
+  const [dateFrom, setDateFrom] = useState(new Date());
+  const [dateTo, setDateTo] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const baseURL =
     "https://wfs-api.mcredit.com.vn/wfsloan-service/api/v1/web-service/operation/export/user_register/vtp";
@@ -36,24 +40,15 @@ function App() {
     setLoading(true);
     Promise.all(
       urls.map(async (url) => {
-        return await postData(url, body);
+        return await postData(url, {
+          ...body,
+          fromDate: dayjs(dateFrom).format("DD/MM/YYYY"),
+          toDate: dayjs(dateTo).format("DD/MM/YYYY"),
+        });
       })
     )
       .then((arrResponse) => {
         arrResponse.forEach((res, index) => {
-          console.log(
-            res.headers.get("content-disposition"),
-            "===response.headers==="
-          );
-          console.log(
-            res.headers["content-disposition"],
-            "===response.headers1==="
-          );
-          console.log(
-            res.headers.get["Content-Disposition"],
-            "===response.headers2==="
-          );
-
           const blobFile = new Blob([res.data]);
           folder.file(`${index}.xlsx`, blobFile);
         });
@@ -77,6 +72,36 @@ function App() {
           }}
           value={numberPage}
         />
+        {/* <input
+          type="number"
+          onChange={(event) => {
+            setNumberPage(event.target.value);
+          }}
+          value={numberPage}
+        /> */}
+        <div style={{ display: "flex", marginBottom: 10 }}>
+          <div style={{ marginRight: 10 }}>
+            <div>Ngày bắt đầu</div>
+            <input
+              type="date"
+              onChange={(event) => {
+                setDateFrom(event.target.value);
+              }}
+              value={dateFrom}
+            />
+          </div>
+          <div>
+            <div>Ngày kết thúc</div>
+            <input
+              type="date"
+              onChange={(event) => {
+                setDateTo(event.target.value);
+              }}
+              value={dateTo}
+            />
+          </div>
+        </div>
+
         {loading ? (
           <div>loading........</div>
         ) : (
