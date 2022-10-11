@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 
 function App() {
   const [numberPage, setNumberPage] = useState(0);
-  const [numberSize, setNumberSize] = useState(0);
+  // const [numberSize, setNumberSize] = useState(0);
   const [dateFrom, setDateFrom] = useState(new Date());
   const [dateTo, setDateTo] = useState(new Date());
   const [loading, setLoading] = useState(false);
